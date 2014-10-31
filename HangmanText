@@ -1,0 +1,165 @@
+##Name: Elaina Cole
+##hangman.py (created in python)
+##Purpose: this is a text-based version of the game hangman
+##Authentication: I certify that this lab is entirely my own work
+
+
+#Import random library to generate random integer later
+from random import *
+
+#Define a function that reads a file and creates a list of words for it
+def returnListOfWords():
+    file = open("wordlist.txt", "r") #opens and reads the text file
+    listOfWords = [] #initialize an empty list
+    
+    for line in file: #Create a for loop that adds words to empty list
+        lineSplit = line.split()
+        for i in range(len(lineSplit)):
+            listOfWords.append(lineSplit[i])
+
+    return listOfWords 
+
+
+#Define a function that returns a random word from a list
+def randomPick(aList):
+    index = randint(0, len(aList)-1) #gives random int as index in range
+    return aList[index]
+
+
+#Define a function that returns the underscores with correctly guessed
+    #letters filled in 
+def guessedWord(word, letter, underscores):
+    undSplit = underscores.split()
+    for i in range(len(word)):
+        if word[i] == letter:
+            undSplit[i] = letter
+
+    return " ".join(undSplit)
+
+#Define a function that returns a Boolean based on whether or not the
+    #letter is in the word
+def letterCheck(word, letter):
+    for i in range(len(word)):
+        if word[i] == letter:
+            return True
+
+
+#Define a function that returns a Boolean based on whether or not the
+        #the result returned in guessedWord() is the secret word
+def wordCheck(word, guess):
+    guessSplit = guess.split()
+    guess = "".join(guessSplit)
+    if word == guess:
+        return True
+    else:
+        return False
+
+#Define a function that checks if a person has already guessed a letter
+def alreadyGuessed(listOfGuesses, letter):
+    for i in range(len(listOfGuesses)):
+        if listOfGuesses[i] == letter:
+            return True
+
+#Define a function that returns a Boolean based on whether or not,
+        #when a person tries to guess the full word,
+        #if that word is the secret word
+def completeGuess(guess, word):
+    if guess == word:
+        return True
+
+
+#Define a function that runs the game
+def hangmanPlay():
+    print("Let's play Hangman!\n")
+
+    incorrectLetters = [] #initialize empty list to place incorrect guesses
+    allLetters = [] #initialize empty list to place all letters
+
+    incorrectGuesses = 7 #number of incorrect guesses allowed
+
+    listOfWords = returnListOfWords() #call function to get a list of words
+    secretWord = randomPick(listOfWords) #call function to pick random
+                                        #word from that list
+
+    underscores = "_ " * len(secretWord) #displays underscores where
+                        #correctly guessed letters will be placed
+
+    totalGuess = " " #initalize variable for when player decides to guess
+                        #the full word
+    
+    
+    while incorrectGuesses != 0: #Keep playing
+        print("Word:", underscores)
+        print("Incorrect letters guessed:", ", ".join(incorrectLetters))
+        print("Incorrect guesses left:", incorrectGuesses)
+
+        yOrN = input("Would you like to guess the whole word (y or n)? ")
+
+        #Runs while the player wants to guess the full world and not just
+            #one letter
+        while yOrN == "y":
+            totalGuess = input("Enter guess: ").lower()
+            if completeGuess(totalGuess, secretWord) == True:
+                print("Congrats! You've guessed it. The word is", secretWord+".")
+                break #breaks out of loop to guess full word to check word
+            else:
+                print("Wrong!\n")
+                incorrectGuesses -= 1
+                print("Word:", underscores)
+                print("Incorrect letters guessed:", ", ".join(incorrectLetters))
+                print("Incorrect guesses left:", incorrectGuesses)
+                yOrN = input("Would you like to guess the whole word (y or n)? ")
+
+        #Checks if complete guess is correct
+        if wordCheck(secretWord, totalGuess) == True:
+            break
+
+        #allows user to input a single letter
+        guessLetter = input("Guess letter: ").lower()
+
+        
+        #Checks if player has already guessed that letter and tells them
+            #no guesses are deducted
+            #Checks in allLetters list
+        if alreadyGuessed(allLetters, guessLetter) == True:
+            print("\nYou've already guessed that silly. Try again.\n")
+            print("Word:", underscores)
+            print("Incorrect letters guessed:", ", ".join(incorrectLetters))
+            print("Incorrect guesses left:", incorrectGuesses)
+            guessLetter = input("Guess letter: ")
+
+        #Add letter to allLetters list so that it can be checked later
+            #if a person reenters a letter already guessed
+        allLetters.append(guessLetter)
+
+        #underscores becomes the underscores where unguessed letters in the
+            #secret word go and correctly guessed letters replace
+            #the underscores
+        underscores = guessedWord(secretWord, guessLetter, underscores)
+
+        #Tells the player if letter guessed was correct or not
+        if letterCheck(secretWord, guessLetter) == True:
+            print("Correct!\n")
+
+        else:
+            print("Wrong!\n")
+            incorrectLetters.append(guessLetter)
+            incorrectGuesses -= 1 #subtracts one from number of guesses allowed
+            
+    #Breaks out of game if correct word is guessed...
+    if wordCheck(secretWord, underscores) == True:
+        print("Congrats! You've guessed it. The word is", secretWord+".")
+    #Or if the user ran out of guesses
+    elif incorrectGuesses == 0:
+        print("Sorry you lose. The word is", secretWord+".")
+
+    
+    playAgain = input("\nDo you want to play again (y or n)? ").lower()
+
+    #Runs game again if player answered yes to previous question
+    if playAgain == "y":
+        hangmanPlay()
+    else:
+        print("\nThanks for playing. Goodbye.")
+
+hangmanPlay()
