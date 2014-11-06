@@ -1,0 +1,418 @@
+##Name: Elaina Cole
+##hangmanGUI.py
+##
+##Purpose: Make a GUI hangman game with only 7 incorrect guesses allowed
+##
+##Authentification: i certify that this is entirely my own work
+
+
+#Import graphics and random libraries
+from graphics import *
+from random import *
+
+
+#Define a function that when called, draws the hanging device
+def hangArea(win):
+    line1 = Line(Point(191, 81), Point(191, 47))
+    line2 = Line(Point(191, 47), Point(292, 47))
+    line3 = Line(Point(292, 47), Point(292, 300))
+    line4 = Line(Point(292, 300), Point(250, 300))
+    line5 = Line(Point(292, 300), Point(334, 300))
+
+    line1.draw(win)
+    line2.draw(win)
+    line3.draw(win)
+    line4.draw(win)
+    line5.draw(win)
+    
+
+#Define a function that when called, draws the head
+def head(win):
+    center = Point(191, 106)
+    head = Circle(center, 106-81)
+    head.draw(win)
+
+
+#Define a function that when called, draws the torso
+def body(win):
+    line = Line(Point(191, 130), Point(191, 265))
+    line.draw(win)
+
+
+
+#Define a function that when called, draws the first arm
+def arm1(win):
+    p1 = Point(192, 188)
+    p2 = Point(239, 164)
+    arm = Line(p1, p2)
+    arm.draw(win)
+
+
+
+#Define a function that when called, draws the second arm
+def arm2(win):
+    p1 = Point(192, 188)
+    p2 = Point(140, 164)
+    arm = Line(p1, p2)
+    arm.draw(win)
+
+
+#Define a function that when called, draws the first leg
+def leg1(win):
+    p1 = Point(191, 264)
+    p2 = Point(147, 290)
+
+    leg = Line(p1, p2)
+    leg.draw(win)
+
+
+#Define a function that when called, draws the second leg
+def leg2(win):
+    p1 = Point(191, 264)
+    p2 = Point(237, 290)
+
+    line = Line(p1, p2)
+    line.draw(win)
+
+
+#Define a function that when called, draws a dead looking face
+def face(win):
+    eye1p1 = Point(178, 95)
+    eye1p2 = Point(186, 103)
+    eye1p3 = Point(178, 103)
+    eye1p4 = Point(186, 95)
+
+    eyeLine1 = Line(eye1p1, eye1p2)
+    eyeLine2 = Line(eye1p3, eye1p4)
+    eyeLine1.draw(win)
+    eyeLine2.draw(win)
+    
+    eye2Line1 = eyeLine1.clone()
+    eye2Line1.move(20, 0)
+    eye2Line1.draw(win)
+    eye2Line2 = eyeLine2.clone()
+    eye2Line2.move(20,0)
+    eye2Line2.draw(win)
+
+    mouthP1 = Point(179, 115)
+    mouthP2 = Point(201, 115)
+    mouth = Line(mouthP1, mouthP2)
+    mouth.draw(win)
+
+    
+    
+
+#Define a function that reads a file and creates a list of words for it
+def returnListOfWords():
+
+    file = open("wordlist.txt", "r") #opens and reads the file
+    listOfWords = [] #initialize an empty list
+
+    
+    for line in file: #Create a for loop that adds words to empty list
+        lineSplit = line.split()
+
+        for i in range(len(lineSplit)):
+            listOfWords.append(lineSplit[i])
+
+    return listOfWords              
+
+
+
+#Define a function that returns a random word from a list
+def randomPick(aList):
+    index = randint(0, len(aList)-1) #gives random int as index in range
+    return aList[index]
+
+
+#Define a function that returns the underscores with correctly guessed
+    #letters filled in  
+def guessedLetter(word, letter, underscores):
+    underscores = underscores.getText()
+    undSplit = underscores.split()
+    for i in range(len(word)):
+        if word[i] == letter:
+            undSplit[i] = letter
+
+    underscores = " ".join(undSplit)
+    return underscores
+
+
+#Define a function that returns true if the letter is in the word
+def letterCheck(word, letter):
+    for i in range(len(word)):
+        if word[i] == letter:
+            return True
+
+
+#Define a function that returns true if letter has been guessed already
+def alreadyGuessed(listOfGuesses, letter):
+    for i in range(len(listOfGuesses)):
+        if listOfGuesses[i] == letter:
+            return True
+            break
+
+#Define a function that returns true if a person
+        #has clicked the "guess" button
+def checkClick(click):
+    box = Rectangle(Point(310, 383), Point(375, 420))
+    boxP1X = 310
+    boxP1Y = 383
+    boxP2X = 375
+    boxP2Y = 420
+
+    clickX = click.getX()
+    clickY = click.getY()
+    
+    if clickX >= boxP1X and clickX <= boxP2X and clickY >= boxP1Y and clickY <= boxP2Y:
+        return True
+    else:
+        return False
+
+
+
+#Define a function that returns the alphabet list of letters not guessed
+def alphaCheck(alphaList, letter):
+    letter = letter.upper()
+    alphaList = alphaList.split()
+    
+    for i in range(len(alphaList)):
+        if alphaList[i] == letter:
+            alphaList[i] = " "
+
+    alphaList = " ".join(alphaList)
+    
+    return alphaList
+
+
+#Define a function that returns a Boolean based on whether or not the
+        #the result returned in guessedWord() is the secret word 
+def wordCheck(underscores, secretWord):
+    undText = underscores.getText()
+    undSplit = undText.split()
+    guessedWord = "".join(undSplit)
+
+    if guessedWord == secretWord:
+        return True
+
+
+#Define a function that draws a body party based on an incorrect guess
+def drawBody(win, incorrectGuesses):
+        if incorrectGuesses == 7:
+            incorrectGuesses = 7
+        elif incorrectGuesses == 6:
+            head(win)
+        elif incorrectGuesses == 5:
+            body(win)
+        elif incorrectGuesses == 4:
+            arm1(win)
+        elif incorrectGuesses == 3:
+            arm2(win)
+        elif incorrectGuesses == 2:
+            leg1(win)
+        elif incorrectGuesses == 1:
+            leg2(win)
+        elif incorrectGuesses == 0:
+            face(win)
+
+
+#Define a function that returns "yes" if person clicks the yes button
+            #and "no" if no button is clicked
+def playAgain(yesBox, noBox, click):
+    #Find corners of yes box
+    yesBoxP1 = yesBox.getP1()
+    yesCorner1X = yesBoxP1.getX()
+    yesCorner1Y = yesBoxP1.getY()
+    yesBoxP2 = yesBox.getP2()
+    yesCorner2X = yesBoxP2.getX()
+    yesCorner2Y = yesBoxP2.getY()
+
+    #Find corners of no box
+    noBoxP1 = noBox.getP1()
+    noCorner1X = noBoxP1.getX()
+    noCorner1Y = noBoxP1.getY()
+    noBoxP2 = noBox.getP2()
+    noCorner2X = noBoxP2.getX()
+    noCorner2Y = noBoxP2.getY()
+    
+    clickX = click.getX()
+    clickY = click.getY()
+
+    #Based on yes box domain and range
+    if clickX >= yesCorner1X and clickX <= yesCorner2X and clickY >= yesCorner1Y and clickY <= yesCorner2Y:
+        return "yes"
+    #Based on no box domin and range
+    if clickX >= noCorner1X and clickX <= noCorner2X and clickY >= noCorner1Y and clickY <= noCorner2Y:
+        return "no"
+        
+
+
+#Define a main function that plays the hangman game            
+def hangmanPlay():
+    #Draw the window
+    win = GraphWin("HANGMAN!!!", 500, 500)
+
+    #Call the function that draws hanging device
+    hangArea(win)
+
+    #draw the "click to guess" box
+    enter = Text(Point(342, 400), "Click to Guess")
+    enter.setSize(9)
+    enter.draw(win)
+    box = Rectangle(Point(310, 383), Point(375, 420))
+    box.draw(win)
+
+    #Draw an entry box that allows the user to input a letter
+    letterEntry = Entry(Point(250, 400), 10)
+    letterEntry.draw(win)
+    guessLetterText = Text(Point(175, 400), "Enter letter:")
+    guessLetterText.draw(win)
+
+    #Call the function that returns a list of words
+    listOfWords = returnListOfWords()
+    #Call the function that returns a random word from previous list
+    secretWord = randomPick(listOfWords)
+
+    #Initialize the number of incorrect guesses allowed at 7
+    incorrectGuesses = 7
+
+    #Initialize an empty list that will store all the letters guessed
+    allLetters = []
+
+    #Draw the underscores that represent unguessed letters
+    underscores = Text(Point(250, 350), "_ "*len(secretWord))
+    anchPt = underscores.getAnchor()
+    underscores.setSize(25)
+    underscores.draw(win)
+    
+
+    #Draw a chart that shows the letters not guessed yet
+    alphaL1 = "A B C D E F G H I"
+    alphaL2 = "J K L M N O P Q R"
+    alphaL3 = "S T U V W X Y Z"
+    alphabet = "\n"+alphaL1+"\n"+alphaL2+"\n"+alphaL3
+    lettersNotGuessed = Text(Point(411, 50), "Letters Not Guesssed:"+alphabet)
+    lettersNotGuessed.draw(win)
+
+
+    #Play the game until the word is guessed or until out of wrong guesses
+    while incorrectGuesses != 0 and wordCheck(underscores, secretWord) != True:
+        guessClick = win.getMouse()
+        
+
+        #This will not stop the game if the person accidentally clicks
+            #outside the guess button
+        while checkClick(guessClick) != True:
+            guessClick = win.getMouse()
+
+
+        #This stores the letter entered in the entry box
+            #as the variable letter
+            #if the person clicks the guess button
+        if checkClick(guessClick) == True:
+            letter = (letterEntry.getText()).lower()
+
+
+        #This checks if the letter has already beeen guessed
+        while alreadyGuessed(allLetters, letter) == True:
+            sayAlreadyGuess = Text(Point(250, 470), "You guessed that already!")
+            sayAlreadyGuess.draw(win)
+            guessClick = win.getMouse()
+            sayAlreadyGuess.undraw()
+            #This allows the user to enter a new letter
+            if checkClick(guessClick) == True:
+                newLetter = (letterEntry.getText()).lower()
+                letter = newLetter
+
+        #This takes the letter entered and puts it in the
+                #previously empty list
+        allLetters.append(letter)
+
+
+        #This takes the lines of the text of the letters not guessed
+            #and removes a letter that has been entered by the user
+        alphaL1 = alphaCheck(alphaL1, letter)
+        alphaL2 = alphaCheck(alphaL2, letter)
+        alphaL3 = alphaCheck(alphaL3, letter)
+        alphabet = "\n"+alphaL1+"\n"+alphaL2+"\n"+alphaL3
+        lettersNotGuessed.setText("Letters Not Guesssed:" + alphabet)
+
+
+        #This redraws the underscores with the correctly guessed
+            #letters in the right place
+        if guessedLetter(secretWord, letter, underscores) != underscores:
+            underscores.undraw()
+            newUnd = Text(anchPt, guessedLetter(secretWord, letter, underscores))
+            underscores = newUnd
+            underscores.setSize(25)
+            underscores.draw(win)
+
+        #If the underscores have all the correct letters, break
+            #out of the while loop. Don't let the player guess more
+            #because the entire word has been guessed
+        if wordCheck(underscores, secretWord) == True:
+            break
+
+        #If the letter guessed is not in the word, subtract 1 from
+            #number of incorrect guesses
+        if letterCheck(secretWord, letter) != True:
+            incorrectGuesses = incorrectGuesses - 1
+        else:
+            incorrectGuesses = incorrectGuesses
+
+        #Call the function that hangs the body parts based on
+            #the number of incorrect guesses
+        drawBody(win, incorrectGuesses)
+
+
+    
+    if incorrectGuesses == 0: #Then you lost 
+        newUnd.undraw()
+        newUnd = Text(anchPt, secretWord)
+        newUnd.setSize(25)
+        newUnd.draw(win)
+        
+        result = Text(Point(250, 450), "SORRY YOU LOSE!")
+        result.draw(win)
+        
+
+    elif incorrectGuesses != 0 : #Then you won
+        result = Text(Point(250, 450), "CONGRATS YOU WIN!")
+        result.draw(win)
+
+    #Undraw the click box and entry box
+    box.undraw()
+    letterEntry.undraw()
+
+    #Draw text asking user to play again
+    guessLetterText.setText("Play again?")
+
+    #Draw a yes box
+    enter.setText("Yes")
+    enter.setSize(12)
+    yesBox = Rectangle(Point(310, 383), Point(375, 420))
+    yesBox.draw(win)
+
+    #Draw a no box
+    noBox = Rectangle(Point(210, 383), Point(275, 420))
+    noBox.draw(win)
+    noText = Text(Point(240, 400), "No")
+    noText.draw(win)
+
+    click = win.getMouse()
+    
+    #This will not stop the game if the person accidentally clicks
+        #something other than the yes or no boxes
+    while playAgain(yesBox, noBox, click) != "yes" and playAgain(yesBox, noBox, click) != "no":
+        click = win.getMouse()
+
+    #Restarts the game if player clicks yes
+    if playAgain(yesBox, noBox, click) == "yes":
+        win.close()
+        hangmanPlay()
+    #Closes game/window if player clicks no
+    elif playAgain(yesBox, noBox, click) == "no":
+        win.close()
+
+#Call the main game play function to start game
+hangmanPlay()
