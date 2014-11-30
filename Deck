@@ -1,0 +1,135 @@
+##Elaina Cole
+## Deck.py
+## Purpose: Create a class that creates a deck of cards
+## Authentification: I certify that this lab is entirely my own work
+
+#Import the Card class from the Card file as well as random
+from Card import Card
+from random import *
+import time
+
+
+#Create a class the will create a deck of cards
+class Deck:
+
+    #Define the constructors
+    def __init__(self):
+        #Create a list of cards
+        cardList = []
+        for i in range(1, 13+1):
+            card = Card(i, "Clubs")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Hearts")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Spades")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Diamonds")
+            cardList.append(card)
+
+        #Define the deck as a constructor
+        self.deck = cardList
+        #Define the next constructor at 0
+        self.next = 0
+
+    #Define a function that shuffles the deck
+    def shuffle(self):
+        newDeck = []
+        for i in range(len(self.deck)):
+            randCard = self.deck[randint(0, len(self.deck)-1)]
+            self.deck.remove(randCard)
+            newDeck.append(randCard)
+        self.deck = newDeck 
+        self.next = 0
+        return self.deck
+
+    #Define a function that deals the next card in the deck
+    def deal(self):
+        if self.next == len(self.deck):
+            return -1
+        else:
+            card = self.deck[self.next]
+            self.next += 1
+            return card
+
+    #Define a sort function that builds a new deck
+    def sort(self):
+        cardList = []
+        for i in range(1, 13+1):
+            card = Card(i, "Clubs")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Hearts")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Spades")
+            cardList.append(card)
+        for i in range(1, 13+1):
+            card = Card(i, "Diamonds")
+            cardList.append(card)
+
+        
+        self.deck = cardList
+        self.next = 0
+        
+    #Create a string game of battle
+    def battle(self):
+        suitList = ["Clubs", "Hearts", "Spades", "Diamonds"]
+        deck = self.shuffle()
+
+        player1Deck = deck[:26]
+        player2Deck = deck[26:]
+
+        player1Pts = 0
+        player2Pts = 0
+        tie = 0
+
+                
+        for i in range(26):
+            print("Player 1 played", player1Deck[i])
+            print("Player 2 played", player2Deck[i])
+            suit1 = player1Deck[i].getSuit()
+            suit2 = player2Deck[i].getSuit()
+
+            face1 = player1Deck[i].getFaceValue()
+            face2 = player2Deck[i].getFaceValue()
+
+            if face1 == face2:
+                tie += 1
+            elif face1 > face2:
+                player1Pts += 1
+            else:
+                player2Pts += 1
+
+            print("Player 1 total:", player1Pts)
+            print("Player 2 total:", player2Pts)
+            print("Ties:", tie)
+            print("\n")
+            time.sleep(.5)
+        if player1Pts > player2Pts:
+            print("Player 1 wins with a score of", player1Pts)
+            print("Player 2 loses with a score of", player2Pts)
+            print("There were {0} ties".format(tie))
+            return ""
+        elif player2Pts > player1Pts:
+            print("Player 2 wins with a score of", player2Pts)
+            print("Player 1 loses with a score of", player1Pts)
+            print("There were {0} ties".format(tie))
+            return ""
+        else:
+            print("IT'S A TIE!")
+            print("Player 1 scored", player1Pts)
+            print("Player 2 scored", player2Pts)
+            print("There were {0} ties".format(tie))
+        
+                
+    #Define a function that outputs the cards as a string
+    def __str__(self):
+    
+        for cards in self.deck:
+            print(str(cards))
+            
+        return ""
+    
