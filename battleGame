@@ -1,0 +1,417 @@
+#Elaina Cole
+#battleGame.py
+#Purpose: Creates a graphic version of the card game Battle a.k.a. War
+#Downloads include 4 gif images (in zip file) of the card suits, graphics.py, and
+    #Card.py and Deck.py which I also created (can find Card and Deck on my gitHub)
+#Make sure to download to wherever you keep your python documents/libraries
+
+#Must download Card.py and Deck.py and graphics.py
+from Card import Card
+from graphics import *
+from Deck import Deck
+import time
+
+
+#Define a function that draws various graphics in the window
+def gameArea(win):
+    #Creates player's card area
+    cardP1 = Rectangle(Point(71, 81), Point(283, 334))
+    cardP1.draw(win)
+
+    #Creates computer's card area
+    cardP2 = cardP1.clone()
+    cardP2.move(300, 0)
+    cardP2.draw(win)
+
+    #Tells what card is Players
+    player1Text = Text(Point(168, 44), "Player 1")
+    player1Text.setSize(30)
+    player1Text.draw(win)
+
+    #Tells what card is Computers
+    player2Text = player1Text.clone()
+    player2Text.move(310, 0)
+    player2Text.setText("Computer")
+    player2Text.draw(win)
+
+    #Text that goes next to the text version of what the player draws 
+    youDrewText = Text(Point(118, 491), "You drew:")
+    youDrewText.setSize(20)
+    youDrewText.draw(win)
+
+    #Text that goes next to the text version of what the computer draws
+    compDrewText = youDrewText.clone()
+    compDrewText.move(350, 0)
+    compDrewText.setText("Computer drew:")
+    compDrewText.draw(win)
+
+    #Scoreboard heading
+    scoreBoardText = Text(Point(308, 564), "SCOREBOARD")
+    scoreBoardText.setStyle("bold")
+    scoreBoardText.setSize(25)
+    scoreBoardText.draw(win)
+
+    #Player's score heading
+    playerScoreText = Text(Point(240, 597), "Player:")
+    playerScoreText.setSize(20)
+    playerScoreText.draw(win)
+
+    #Computer's score heading
+    compScoreText = Text(Point(240, 630), "Computer:")
+    compScoreText.setSize(20)
+    compScoreText.draw(win)
+
+    #Tie score heading
+    tieText = Text(Point(240, 664), "Ties:")
+    tieText.setSize(20)
+    tieText.draw(win)
+
+    #Return these objects in a list so they can be undrawn later
+    graphicObjList = [cardP1, cardP2, youDrewText, compDrewText, player1Text, player2Text]
+    return graphicObjList
+
+
+#Define a function that returns a Boolean based on if the player clicked deal or not
+def dealCheck(click, rectangle):
+    clickX = click.getX()
+    clickY = click.getY()
+
+    rectPt1 = rectangle.getP1()
+    rectPt1X = rectPt1.getX()
+    rectPt1Y = rectPt1.getY()
+
+    rectPt2 = rectangle.getP2()
+    rectPt2X = rectPt2.getX()
+    rectPt2Y = rectPt2.getY()
+
+    #These are the intervals of the x and y coordinates of the "Draw" box
+    if clickX >= rectPt1X and clickX <= rectPt2X and clickY >= rectPt1Y and clickY <= rectPt2Y:
+        return True
+    else:
+        return False
+
+
+#Define a function that returns and draws the face value of the card drawn
+def faceGraphic(faceValue, point, win, suit):
+    suit = suit.lower()
+    if faceValue == 1:
+        ace = Text(point, "A")
+        ace.setFace("courier")
+        ace.setSize(36)
+        ace.draw(win)
+        if suit == "hearts" or suit == "diamonds":
+            ace.setTextColor("red")
+        return ace
+    elif faceValue == 11:
+        jack = Text(point, "J")
+        jack.setFace("courier")
+        jack.setSize(36)
+        jack.draw(win)
+        if suit == "hearts" or suit == "diamonds":
+            jack.setTextColor("red")
+        return jack
+    elif faceValue == 12:
+        queen = Text(point, "Q")
+        queen.setFace("courier")
+        queen.setSize(36)
+        queen.draw(win)
+        if suit == "hearts" or suit == "diamonds":
+            queen.setTextColor("red")
+        return queen
+    elif faceValue == 13:
+        king = Text(point, "K")
+        king.setFace("courier")
+        king.setSize(36)
+        king.draw(win)
+        if suit == "hearts" or suit == "diamonds":
+            king.setTextColor("red")
+        return king
+    else:
+        number = Text(point, str(faceValue))
+        number.setFace("courier")
+        number.setSize(36)
+        number.draw(win)
+        if suit == "hearts" or suit == "diamonds":
+            number.setTextColor("red")
+        return number
+
+#Define a function the returns and draws the image of the suit drawn 
+def suitGraphic(point, suit, win):
+    suit = suit.lower()
+        
+    if suit == "clubs":
+        image = Image(point, "clubs.gif")
+        image.draw(win)
+        return image
+    elif suit == "hearts":
+        image = Image(point, "hearts.gif")
+        image.draw(win)
+        return image
+    elif suit == "spades":
+        image = Image(point, "spades.gif")
+        image.draw(win)
+        return image
+    else:
+        image = Image(point, "diamonds.gif")
+        image.draw(win)
+        return image
+
+#Define a function that when asked if the player wants to play again,
+        #returns a Boolean based on if the player clicked yes or no
+def yOrNCheck(click, yesBox, noBox):
+    yesBoxP1 = yesBox.getP1()
+    yesBoxP1X = yesBoxP1.getX()
+    yesBoxP1Y = yesBoxP1.getY()
+    
+    yesBoxP2 = yesBox.getP2()
+    yesBoxP2X = yesBoxP2.getX()
+    yesBoxP2Y = yesBoxP2.getY()
+
+    noBoxP1 = noBox.getP1()
+    noBoxP1X = noBoxP1.getX()
+    noBoxP1Y = noBoxP1.getY()
+    
+    noBoxP2 = noBox.getP2()
+    noBoxP2X = noBoxP2.getX()
+    noBoxP2Y = noBoxP2.getY()
+
+    clickX = click.getX()
+    clickY = click.getY()
+
+    #Intervals of x and y-coordinates of yes box
+    if clickX <= yesBoxP2X and clickX >= yesBoxP1X and clickY >= yesBoxP1Y and clickY <= yesBoxP2Y:
+        return True
+    #Intervals of x and y-coordinates of no box
+    elif clickX <= noBoxP2X and clickX >= noBoxP1X and clickY >= noBoxP1Y and clickY <= noBoxP2Y:
+        return False
+    #Returns "nah" if player clicked neither the yes or no box
+    else:
+        return "nah"
+
+#Define a function that plays the game
+def playGame():
+    #Draws the graphics window and calls the gameArea() fucntion
+    win = GraphWin("BATTLE!", 700, 700)
+    game = gameArea(win)
+
+    #This draws the box that player should click to draw the next card
+    drawBoxText = Text(Point(320, 400), "Click to Draw")
+    drawBoxText.setSize(30)
+    drawBoxText.draw(win)
+    drawBox = Rectangle(Point(208, 369), Point(427, 424))
+    drawBox.draw(win)
+
+    #This builds a deck of cards (a list) based on the Deck() class
+    fullDeck = Deck()
+    #Shuffles the deck (.shuffle() in Deck.py)
+    shuffledDeck = fullDeck.shuffle()
+    #Cuts the deck in half and distributes to player and computer
+    playersDeck = shuffledDeck[:26]
+    compDeck = shuffledDeck[26:]
+
+    #initializes variables of count (how many times the player has drawn a card)
+        #as well as the player's score, the computer's score
+        #and the number of ties
+    count = 0
+    tie = 0
+    playerScore = 0
+    compScore = 0
+
+    #Puts the amount of ties next "Ties:" under scoreboard
+    tieText = Text(Point(280, 665), str(tie))
+    tieText.setSize(16)
+    tieText.draw(win)
+
+    #Puts computer's score next to "Computer:" under scoreboard
+    compScoreText = Text(Point(310, 630), str(compScore))
+    compScoreText.setSize(16)
+    compScoreText.draw(win)
+
+    #Puts player's score next to "Player:" under scoreboard
+    playerScoreText = Text(Point(288, 597), str(playerScore))
+    playerScoreText.setSize(16)
+    playerScoreText.draw(win)
+
+    #Runs the game while the number of draws (count) is less than 26
+    while count < 26:
+        click = win.getMouse()
+
+        #Checks to see if the players click is within the drawBox
+            #if not, it will keep checking to see if the click is
+        while dealCheck(click, drawBox) == False:
+            click = win.getMouse()
+            
+        #if player does click within the draw box,set variables
+            #equal to the cards that the player and computer drew
+        if dealCheck(click, drawBox) == True:
+            playersCard = playersDeck[count]
+            compsCard = compDeck[count]
+        
+        #Get the face value and suit of player's card (from Card.py)
+        playerFaceValue = playersCard.getFaceValue()
+        playerSuit = playersCard.getSuit()
+
+        #Get the face value and suit of computer's card
+        compFaceValue = compsCard.getFaceValue()
+        compSuit = compsCard.getSuit()
+
+        #Adds to computer's score if its face value is greater than player's face value
+        if compFaceValue > playerFaceValue:
+            compScore += 1
+            compScoreText.setText(str(compScore))
+        #Adds to player's score if its face value is greater than computer's face value
+        elif compFaceValue < playerFaceValue:
+            playerScore += 1
+            playerScoreText.setText(str(playerScore))
+        #Adds to tie score if face value of two cards are the same
+        else:
+            tie += 1
+            tieText.setText(str(tie))
+
+        #Runs through making the graphic cards if count == 0, when nothing needs to be undrawn
+        if count == 0:
+            pt1 = Point(168, 201)
+            pt2 = Point(472, 201)
+
+            pt3 = Point(92, 111)
+            pt4 = Point(256, 297)
+
+            pt5 = Point(404, 111)
+            pt6 = Point(551, 297)
+
+            #Draws the face value on the card
+            playersGraphicFace = faceGraphic(playerFaceValue, pt1, win, playerSuit)
+            #Draws images of the suits in two corners on the card
+            playersGraphicSuit1 = suitGraphic(pt3, playerSuit, win)
+            playersGraphicSuit2 = suitGraphic(pt4, playerSuit, win)
+
+            #Draws the face value on the card
+            compsGraphicFace = faceGraphic(compFaceValue, pt2, win, compSuit)
+            #Draws images of the suits in two corners on the card
+            compsGraphicSuit1 = suitGraphic(pt5, compSuit, win)
+            compsGraphicSuit2 = suitGraphic(pt6, compSuit, win)
+
+            #Tells the player what card s/he drew
+            playersDraw = Text(Point(250, 490), Card(playerFaceValue, playerSuit))
+            playersDraw.setSize(17)
+            playersDraw.draw(win)
+
+            #Tells the user what card the computer drew
+            compsDraw = Text(Point(620, 490), Card(compFaceValue, compSuit))
+            compsDraw.setSize(17)
+            compsDraw.draw(win)
+
+
+        #Everything is the same as "if count == 0"
+            #BUT now the face graphics and suit images form the
+            #play before have to be undrawn
+        else:
+            playersDraw.undraw()
+            compsDraw.undraw()
+            
+            pt1 = Point(168, 201)
+            pt2 = Point(472, 201)
+
+            pt3 = Point(92, 111)
+            pt4 = Point(256, 297)
+
+            pt5 = Point(404, 111)
+            pt6 = Point(551, 297)
+            
+            playersGraphicFace.undraw()
+            compsGraphicFace.undraw()
+            playersGraphicSuit1.undraw()
+            playersGraphicSuit2.undraw()
+            compsGraphicSuit1.undraw()
+            compsGraphicSuit2.undraw()
+            
+            playersGraphicFace = faceGraphic(playerFaceValue, pt1, win, playerSuit)
+            playersGraphicSuit1 = suitGraphic(pt3, playerSuit, win)
+            playersGraphicSuit2 = suitGraphic(pt4, playerSuit, win)
+            
+            compsGraphicFace = faceGraphic(compFaceValue, pt2, win, compSuit)
+            compsGraphicSuit1 = suitGraphic(pt5, compSuit, win)
+            compsGraphicSuit2 = suitGraphic(pt6, compSuit, win)
+            
+            playersDraw = Text(Point(250, 490), Card(playerFaceValue, playerSuit))
+            playersDraw.setSize(17)
+            playersDraw.draw(win)
+
+            compsDraw = Text(Point(620, 490), Card(compFaceValue, compSuit))
+            compsDraw.setSize(17)
+            compsDraw.draw(win)
+        
+        #Add one to the value of count                           
+        count+=1
+
+    #Once the player has gone 26 times, it's time to announce the winner
+    if count >= 26:
+        #Undraw all the previously drawn texts, images, and objects
+            #except for the scoreboards
+        time.sleep(1)
+        playersDraw.undraw()
+        compsDraw.undraw()
+        playersGraphicFace.undraw()
+        compsGraphicFace.undraw()
+        playersGraphicSuit1.undraw()
+        playersGraphicSuit2.undraw()
+        compsGraphicSuit1.undraw()
+        compsGraphicSuit2.undraw()
+        drawBox.undraw()
+        drawBoxText.undraw()
+        for objectsDrawn in game:
+            objectsDrawn.undraw()
+
+        #Unveils the winner based on playerScore and compScore
+        if playerScore > compScore: #player wins
+            youWinText = Text(Point(350, 100), "YOU WIN!!!")
+            youWinText.setSize(36)
+            youWinText.draw(win)
+        elif playerScore < compScore: #computer wins
+            youLoseText = Text(Point(350, 100), "YOU LOSE. SORRY.")
+            youLoseText.setSize(36)
+            youLoseText.draw(win)
+        else: #it was a tie
+            youTiedText = Text(Point(350, 100), "We'll call it a draw.")
+            youTiedText.setSize(36)
+            youTiedText.draw(win)
+
+        #Draws text asking if user wants to play again
+        playAgainText = Text(Point(350, 220), "PLAY AGAIN?")
+        playAgainText.setSize(25)
+        playAgainText.draw(win)
+
+        #Draws a rectangle with the word "YES" inside
+        yesBox = Rectangle(Point(200, 250), Point(275, 300))
+        yesBox.draw(win)
+        yesBoxCenter = yesBox.getCenter()
+        yesText = Text(yesBoxCenter, "YES")
+        yesText.setSize(25)
+        yesText.draw(win)
+
+        #Draws a rectangle with the word "NO" inside
+        noBox = Rectangle(Point(400, 250), Point(475, 300))
+        noBox.draw(win)
+        noBoxCenter = noBox.getCenter()
+        noText = Text(noBoxCenter, "NO")
+        noText.setSize(25)
+        noText.draw(win)
+
+        
+        anotherClick = win.getMouse()
+        #Calls the function that checks whether or not
+            #the person clicked inside the yes or no box
+        while yOrNCheck(anotherClick, yesBox, noBox) == "nah":
+            #continues to check the click if user clicked outside
+                #both the yes and no boxes
+            anotherClick = win.getMouse()
+        if yOrNCheck(anotherClick, yesBox, noBox) == True:
+            #user wants to play again
+            win.close()
+            playGame()
+        elif yOrNCheck(anotherClick, yesBox, noBox) == False:
+            #user does not want to play again
+            win.close()
+                
+#Call the function to start game play  
+playGame()
